@@ -12,18 +12,24 @@ export class UsersService{
     async create(createUserDto: CreateUserDto): Promise <Users>{
         try{
             const user = new this.userModel();//create new empty mongoose document
-            const hashPassword = await bcrypt.hash(createUserDto.password, 10);
+            //const hashPassword = await bcrypt.hash(createUserDto.password, 10);
             
             //fill the fields one by one
             user.username = createUserDto.username;
             user.email = createUserDto.email
-            user.password = hashPassword;
+            user.password = createUserDto.password;
             user.role = createUserDto.role;
             //save to Database
             return await user.save();
         }catch(error){
-            throw new Error(`error creating ${error} user ${error.message}`)
+            throw new Error(`error creating ${error} user ${error}`)
         }
+    }
+
+    async findByEmail(email: string) : Promise<Users | null>{
+        return this.userModel.findOne({
+            email
+        })
     }
 
     async findOne(email: string, password: string): Promise <Users | void>{
@@ -38,7 +44,18 @@ export class UsersService{
                 throw new Error(`user not found`);
             }
         }catch(error){
-            throw new Error(`error finding ${error} user ${error.message}`)
+            throw new Error(`error finding ${error} user ${error}`)
+        }
+    }
+    async getProfile(id: string){
+        try{
+            const getUser = await this.userModel.findById(id);
+            if(!getUser){
+                throw new Error('User not found')
+            }
+            return getUser;
+        }catch(error){
+            throw new Error(`error getting profile ${error}`)
         }
     }
 }
