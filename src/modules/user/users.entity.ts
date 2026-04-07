@@ -2,13 +2,13 @@ import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import { HydratedDocument} from 'mongoose';
 
 export enum Role {
-    ADMIN = 'admin',
-    USER = 'user'
+    USER = 'USER',
+    ADMIN = 'ADMIN'
 }
 
 export type UsersDocument = HydratedDocument<Users>;
 
-@Schema({timestamps: true})
+@Schema({timestamps: true, collection: 'users'})
 export class Users {
 
     @Prop({required: true, trim:true})

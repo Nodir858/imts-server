@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Users } from "./users.entity";
 import { Model } from "mongoose";
@@ -26,36 +26,29 @@ export class UsersService{
         }
     }
 
-    async findByEmail(email: string) : Promise<Users | null>{
-        return this.userModel.findOne({
-            email
-        })
+    async findAll(): Promise<Users[]> {
+        return this.userModel.find({
+            selected: ["id", "email", "role", "createdAt"],
+        });
     }
 
-    async findOne(email: string, password: string): Promise <Users | void>{
+    async findOne(id: string): Promise <Users | void>{
         try{
             const user = await this.userModel.findOne({
-                where: {email},
+                where: { id },
+                select: ['id', 'email', 'role', 'createdAt']
             })
-            const isMatch = await bcrypt.compare(password, user?.password);
-            if(user && isMatch){
-                return user
-            }else{
-                throw new Error(`user not found`);
-            }
+            if(!user) throw new NotFoundException(`User ${id} not found`)
         }catch(error){
             throw new Error(`error finding ${error} user ${error}`)
         }
     }
-    async getProfile(id: string){
-        try{
-            const getUser = await this.userModel.findById(id);
-            if(!getUser){
-                throw new Error('User not found')
-            }
-            return getUser;
-        }catch(error){
-            throw new Error(`error getting profile ${error}`)
-        }
+
+    async findByEmail(email: string) : Promise<Users | null>{
+        return this.userModel.findOne({
+            email
+        }).select('+password')
     }
+
+
 }

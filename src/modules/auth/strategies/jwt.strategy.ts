@@ -19,8 +19,10 @@ export class JwtStrategy extends PassportStrategy(Strategy){
     // then we are returning a user object
     async validate(payload: any){
         return {
-            userId: payload.userId,
-            email: payload.email
+            //JWT payload can contains special reserved fields: field sub, meaning subject usually user ID
+            userId: payload.sub,
+            email: payload.email,
+            role: payload.role
         }
     }
 }
