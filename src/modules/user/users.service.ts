@@ -4,6 +4,8 @@ import { Users } from "./users.entity";
 import { Model } from "mongoose";
 import { CreateUserDto } from "./dtos/create-user.dto";
 import * as bcrypt from 'bcrypt'
+import { UpdateUserDto } from "./dtos/update-user.dto";
+
 @Injectable()
 export class UsersService{
 
@@ -32,23 +34,36 @@ export class UsersService{
         });
     }
 
-    async findOne(id: string): Promise <Users | void>{
-        try{
-            const user = await this.userModel.findOne({
-                where: { id },
-                select: ['id', 'email', 'role', 'createdAt']
-            })
-            if(!user) throw new NotFoundException(`User ${id} not found`)
-        }catch(error){
-            throw new Error(`error finding ${error} user ${error}`)
-        }
+    async findById(id: string): Promise <Users | null>{
+        return await this.userModel.findById(id)
     }
 
+    //when we are use typescript promises 
     async findByEmail(email: string) : Promise<Users | null>{
-        return this.userModel.findOne({
+        return  this.userModel.findOne({
             email
         }).select('+password')
     }
 
 
+    async update(id: string, updateUserDto: UpdateUserDto) : Promise<Users | null>{
+        try{
+            const user = await this.userModel.findByIdAndUpdate(
+                id,
+                { $set: updateUserDto},
+                { new: true}
+            )
+            if(!user) throw new NotFoundException(`user with id not found suka zyebal uje `)
+            return user;
+        }catch(error){
+            throw new Error('error suka blet')
+        }
+
+    }
+    
+    async delete(id: string): Promise<any> {
+        return this.userModel.deleteOne({
+            _id: id
+        }).exec()
+    }
 }

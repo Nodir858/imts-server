@@ -1,15 +1,15 @@
 import {IsNotEmpty, IsString, MaxLength, MinLength, Matches } from 'class-validator';
-
+import { Role } from '../users.entity';
 export class CreateUserDto {
     @IsNotEmpty({
         message: 'Username is required',
     })
-    username: string;
+    username!: string;
 
     @IsString({
         message: 'Email must be a string',
     })
-    email: string;
+    email!: string;
 
     @IsString()
     @MinLength(4)
@@ -17,11 +17,11 @@ export class CreateUserDto {
     @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
     message: 'password too weak',
     })
-    password: string;
+    password!: string;
     
     @IsString()
     @IsNotEmpty({
         message: 'Role is required',
     })
-    role: string;
+    role!: string;
 }
